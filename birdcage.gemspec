@@ -8,5 +8,5 @@ Gem::Specification.new do |s|
   s.files       = ["lib/birdcage.rb"]
   s.homepage    = 'http://rubygems.org/gems/birdcage'
   s.license     = 'MIT'
-  s.test_files  = Dir.glob('test/tc_*.rb')
+  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
 end
