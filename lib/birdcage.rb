@@ -15,6 +15,10 @@ class Text
     @args.map { |x| x.length }
   end
 
+  def selected
+    @selected
+  end
+
   def select selected
     if selected < @args.length and selected >= 0
       @selected = selected
