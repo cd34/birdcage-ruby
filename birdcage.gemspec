@@ -1,3 +1,5 @@
+# -*- encoding: utf-8 -*-
+#$:.push File.expand_path("../lib", __FILE__)
 Gem::Specification.new do |s|
   s.name        = 'birdcage'
   s.version     = '0.1.0'
@@ -8,5 +10,5 @@ Gem::Specification.new do |s|
   s.files       = ["lib/birdcage.rb"]
   s.homepage    = 'http://rubygems.org/gems/birdcage'
   s.license     = 'MIT'
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+#  s.test_files = Dir.glob('test/tc_*.rb')
 end
