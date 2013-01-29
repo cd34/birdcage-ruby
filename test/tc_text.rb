@@ -2,9 +2,12 @@ require "./lib/birdcage"
 require "test/unit"
 
 class TextTest < Test::Unit::TestCase  
-  def test_text
-    @l = Text.new(['a', 'bb', 'ccc', 'dddd'])
-    assert_equal(1, @l.cur_len)
+
+  def test_create_unicode_text_object
+    text_object = Text.new(['111', '22', '3', '555555'])
+#        assert_equal(sorted(Text(111,22,3,555555).items), \
+#            [u'111', u'22', u'3', u'555555'])
+    assert_equal(1, text_object.cur_len)
   end
 
   def test_create_trim_text_object
@@ -44,6 +47,36 @@ class TextTest < Test::Unit::TestCase
 
     exception = assert_raise(IndexError) {text_object.select_next}
     assert_equal('Index out of range', exception.message)
+  end
+
+  def test_select_text_object
+    text_object = Text.new(['a','bb','ccc','dddd'])
+
+    text_object.select(0)
+    assert_equal(text_object.cur_text(), 'a')
+
+    text_object.select(1)
+    assert_equal(text_object.cur_text(), 'bb')
+
+    text_object.select(2)
+    assert_equal(text_object.cur_text(), 'ccc')
+
+    text_object.select(3)
+    assert_equal(text_object.cur_text(), 'dddd')
+
+    exception = assert_raise(IndexError) {text_object.select(4)}
+    assert_equal('Index out of range', exception.message)
+
+    exception = assert_raise(IndexError) {text_object.select(-1)}
+    assert_equal('Index out of range', exception.message)
+  end
+
+  def test_lens_text_object
+    text_object = Text.new(['a','bb','ccc','dddd'])
+    assert_equal([1, 2, 3, 4], text_object.lens)
+
+    text_object = Text.new([1, 22, 333, 4444])
+    assert_equal([1, 2, 3, 4], text_object.lens)
   end
 end
 
