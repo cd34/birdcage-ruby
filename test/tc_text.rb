@@ -8,12 +8,13 @@ class TextTest < Test::Unit::TestCase
   end
 
   def test_create_trim_text_object
-#    text_object = Text.new(['message'], trim=true)
+    text_object = Text.new(['message'], {'trim'=>true})
 #    assert_equal(['message'], @text_object.items)
-#    assert_equal('message', Text.new(['message'], trim=true).cur_text())
-#    assert_equal(7, Text.new(['message'], trim=true, trim_length=10).cur_len)
-#    assert_equal(7, Text.new(['message'], trim=true, trim_length=5,
-#        trim_delim='.').cur_len, 7)
+    assert_equal('message', Text.new(['message'], {'trim'=>true}).cur_text())
+    assert_equal(7, Text.new(['message'], 
+      {'trim'=>true, 'trim_length'=>10}).cur_len)
+    assert_equal(7, Text.new(['message'], {'trim'=>true, 'trim_length'=>5,
+      'trim_delim'=>'.'}).cur_len)
   end
 
   def test_iterate_text_object
