@@ -23,7 +23,7 @@ class Text
     if selected < @args.length and selected >= 0
       @selected = selected
     else
-      raise IndexError
+      raise IndexError.new('Index out of range')
     end
   end
 
@@ -56,7 +56,7 @@ class Text
     if @selected < @args.length - 1
       @selected += 1
     else
-      raise IndexError
+      raise IndexError.new('Index out of range')
     end
   end
 end
