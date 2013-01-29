@@ -11,6 +11,10 @@ class Text
     @selected = 0
   end
 
+  #def items
+  #  return @args
+  #end
+
   def lens
     @args.map { |x| x.length }
   end
