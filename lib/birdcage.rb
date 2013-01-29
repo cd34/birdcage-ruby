@@ -1,4 +1,6 @@
 class Text
+  attr_accessor :trim, :selected
+
   def initialize args, options = {}
     @args = args.map(&:to_s).sort_by(&:length)
     @trim = options['trim'] || false
@@ -17,10 +19,6 @@ class Text
 
   def lens
     @args.map { |x| x.length }
-  end
-
-  def selected
-    @selected
   end
 
   def select selected
@@ -66,4 +64,17 @@ class Text
 end
 
 class Phrase
+  def initialize phrase
+    @phrase = phrase
+  end
+
+  def non_trim_length
+    length = 0
+    @phrase.each do |x|
+      if not x.trim
+        length += x.cur_text.length
+      end
+    end
+    return length
+  end
 end
