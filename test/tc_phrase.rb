@@ -16,10 +16,9 @@ class PhraseTest < Test::Unit::TestCase
     text_b = Text.new(['b', 'bb'])
     text_trim = Text.new(['longer message'], {'trim'=>true, 'min_length'=>5})
 
-    assert_equal(Phrase.new([text_a,text_b]).generate(),
-        'aa bb')
-    assert_equal(Phrase.new([text_a,text_trim]).generate(),
-        'aa longer message')
+    assert_equal('aa bb', Phrase.new([text_a,text_b]).generate())
+    assert_equal('aa longer message', 
+      Phrase.new([text_a,text_trim]).generate())
   end
 
   def test_phrase_delim_object
@@ -29,10 +28,10 @@ class PhraseTest < Test::Unit::TestCase
     text_long_trim = Text.new(['this is a much longer message'],
         {'trim'=>true})
 
-    assert_equal(Phrase.new([text_a,text_b]).
-      generate(delimiter=', '), 'aa, bb')
-    assert_equal(Phrase.new([text_a,text_trim]).
-      generate(delimiter=', '), 'aa, longer message')
+    assert_equal('aa, bb', Phrase.new([text_a,text_b]).
+      generate({'delimiter'=>', '}))
+    assert_equal('aa, longer message', Phrase.new([text_a,text_trim]).
+      generate({'delimiter'=>', '}))
   end
    
   def test_phrase_length_object
@@ -41,44 +40,44 @@ class PhraseTest < Test::Unit::TestCase
     text_trim = Text.new(['longer message'], {'trim'=>true, 'min_length'=>5})
     text_long_trim = Text.new(['this is a much longer message'],
         {'trim'=>true})
-    assert_equal(Phrase.new([text_a,text_b]).
-      generate(length=50), 'aa bb')
-    assert_equal(Phrase.new([text_a,text_trim]).
-      generate(length=50), 'aa longer message')
+    assert_equal('aa bb', Phrase.new([text_a,text_b]).
+      generate({'length'=>50}))
+    assert_equal('aa longer message', Phrase.new([text_a,text_trim]).
+      generate({'length'=>50}))
 
-    assert_equal(Phrase.new([text_a,text_b]).
-      generate(length=10), 'aa bb')
-    assert_equal(Phrase.new([text_a, text_trim]).
-      generate(length=10), 'a longe...')
+    assert_equal('aa bb', Phrase.new([text_a,text_b]).
+      generate({'length'=>10}))
+    assert_equal('a longe...', Phrase.new([text_a, text_trim]).
+      generate({'length'=>10}))
 
-    assert_equal(Phrase.new([text_a, text_long_trim]).
-      generate(length=50), 'aa this is a much longer message')
+    assert_equal('aa this is a much longer message', 
+      Phrase.new([text_a, text_long_trim]).generate({'length'=>50}))
 
-    #Phrase.new([text_a,text_b]).generate(length=1)
-    #exception = assert_raise(ValueError) {text_object.select_next}
-    #assert_equal('Invalid length, phrase generate parameter too small', 
-    #  exception.message)
+    Phrase.new([text_a,text_b]).generate(length=1)
+    exception = assert_raise(ArgumentError) {text_object.select_next}
+    assert_equal('Invalid length, phrase generate parameter too small', 
+      exception.message)
   end
 
   def test_phrase_example
     text_a = Text.new(['one hour, fourty-five minutes', '1 hour, 45 minutes',
       '1h45m', '1:45'])
     text_b = Text.new(['until armageddon strikes the earth'], {'trim'=>true})
-    assert_equal(Phrase.new([text_a, text_b]).
-      generate(length=40), '1h45m until armageddon strikes the earth')
+    assert_equal('1h45m until armageddon strikes the earth',
+      Phrase.new([text_a, text_b]).generate({'length'=>40}))
 
     text_a = Text.new(['one hour, fourty-five minutes', '1 hour, 45 minutes',
       '1h45m', '1:45'])
     text_b = Text.new(['until armageddon strikes the earth'], {'trim'=>true})
-    assert_equal(Phrase.new([text_a, text_b]).
-      generate(length=30), '1h45m until armageddon stri...')
+    assert_equal('1h45m until armageddon stri...', Phrase.new([text_a, text_b]).
+      generate({'length'=>30}))
 
     text_a = Text.new(['one hour, fourty-five minutes', '1 hour, 45 minutes',
       '1h45m', '1:45'])
     text_c = Text.new(['until armageddon strikes the earth'],
-      min_length=24, trim=true)
-    assert_equal(Phrase.new([text_a, text_c]).
-      generate(length=30), '1:45 until armageddon strik...')
+      {'min_length'=>24, 'trim'=>true})
+    assert_equal('1:45 until armageddon strik...', Phrase.new([text_a, text_c]).
+      generate({'length'=>30}))
   end
 
 end

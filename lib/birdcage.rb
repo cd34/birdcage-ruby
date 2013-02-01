@@ -68,7 +68,7 @@ class Phrase
     @args = args
   end
 
-  def generate options
+  def generate options = {}
     delim = options['delimiter'] || ' '
     phrase_length = options['length'] || nil
         
@@ -77,31 +77,35 @@ class Phrase
       return max_message
     end
 
-    lens = @args.map {|x| x.lens if not x.trim}.clear
-    len_trims = @args.map {|x| x.min_length if x.trim}.clear
+    lens = @args.map {|x| x.lens if not x.trim}.compact
+    len_trims = @args.map {|x| x.min_length if x.trim}.compact
 
     max_length = phrase_length - delim.length * @args.length -
       len_trims.inject(:+)
-    puts max_length
 
-    #if max_length < 0
-    #  raise ValueError.new('resulting phrase too short')
-    #end
+    if max_length < 0
+      raise ArgumentError.new('resulting phrase too short')
+    end
 
-    #current_len = non_trim_length(args)
-    #num_lens = len(lens)
-    #len_count = 0
+    current_len = non_trim_length()
+    num_lens = lens.length
+    len_count = 0
 
-    #while current_len < max_length and len_count < num_lens:
-    #  for x in args:
-    #    try:
-    #      if x.next_len - x.cur_len + current_len < max_length:
-    #        x.select_next()
-    #        current_len = non_trim_length(args)
-    #        len_count = 0
-    #      except:
-    #        len_count += 1
-
+    while current_len < max_length and len_count < num_lens
+       @args.each do |x|
+        begin
+          if x.next_len - x.cur_len + current_len < max_length
+            x.select_next
+            current_len = non_trim_length(args)
+            len_count = 0
+          end
+        rescue
+            len_count += 1
+        end
+      end
+    end
+ 
+#    final_lens = @args.map(|x| 
 #          final_lens = sum([0 if x.trim else x.cur_len for x in args])
 #          trim_length = (phrase_length - len(delim) * len(args) -
 #            final_lens + 1) / len(len_trims)
