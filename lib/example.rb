@@ -1,10 +1,10 @@
 require "./birdcage"
 
-#l = Text.new(['a', 'bb', 'ccc', 'dddd'])
-#l = Text.new([1, 22, 333, 4444])
+a = Text.new(['a', 'bb', 'ccc', 'dddd'])
+nums = Text.new([1, 22, 333, 4444])
 l = Text.new(['abcdefghijklmnopqrstuvwxyz'], {'trim'=>true})
 #l = Text.new(['abcdefghijklmnopqrstuvwxyz'])
-p = Phrase.new([l])
+p = Phrase.new([l, nums])
     
 #puts l.lens
 #l.select(0)
@@ -20,4 +20,4 @@ p = Phrase.new([l])
 #puts l.next_len
 
 puts p.non_trim_length
-puts p.generate({'length'=>10})
+puts p.generate({'length'=>40, 'delimiter'=>', '})
