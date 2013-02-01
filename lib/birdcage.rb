@@ -29,14 +29,14 @@ class Text
     end
   end
 
-  def cur_text(options = {})
-    trim_length = options[:trim_length] || nil
+  def cur_text options = {}
+    trim_length = options['trim_length'] || nil
     if trim_length and @trim
       append_elipses = ''
       if trim_length < @args[@selected].length
         trim_length -= 3
         append_elipses = '...'
-        return items[selected][:trim_length] + append_elipses
+        return @args[selected][0...trim_length] + append_elipses
       end
     end
     return @args[@selected]
@@ -105,12 +105,10 @@ class Phrase
       end
     end
  
-#    final_lens = @args.map(|x| 
-#          final_lens = sum([0 if x.trim else x.cur_len for x in args])
-#          trim_length = (phrase_length - len(delim) * len(args) -
-#            final_lens + 1) / len(len_trims)
-#          return delim.join([x.cur_text(trim_length=trim_length)
-#            for x in args])
+    final_lens = @args.map {|x| x.cur_len if not x.trim}.compact.inject(:+)
+    trim_length = (phrase_length - delim.length * @args.length -
+      final_lens + 1) / len_trims.length
+    return @args.map {|x| x.cur_text({'trim_length'=>trim_length})}.join(delim)
   end
 
   def non_trim_length

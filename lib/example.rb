@@ -20,4 +20,4 @@ p = Phrase.new([l, nums])
 #puts l.next_len
 
 puts p.non_trim_length
-puts p.generate({'length'=>40, 'delimiter'=>', '})
+puts p.generate({'length'=>20, 'delimiter'=>', '})
