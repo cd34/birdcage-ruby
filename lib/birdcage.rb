@@ -81,7 +81,7 @@ class Phrase
     len_trims = @args.map {|x| x.min_length if x.trim}.compact
 
     max_length = phrase_length - delim.length * @args.length -
-      len_trims.inject(:+)
+      len_trims.inject(0, :+)
 
     if max_length < 0
       raise ArgumentError.new('resulting phrase too short')
