@@ -105,7 +105,7 @@ class Phrase
       end
     end
  
-    final_lens = @args.map {|x| x.cur_len if not x.trim}.compact.inject(:+)
+    final_lens = @args.map {|x| x.cur_len if not x.trim}.compact.inject(0, :+)
     trim_length = (phrase_length - delim.length * @args.length -
       final_lens + 1) / len_trims.length
     return @args.map {|x| x.cur_text({'trim_length'=>trim_length})}.join(delim)
