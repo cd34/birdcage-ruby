@@ -1,6 +1,8 @@
 birdcage-ruby
 =============
 
+[![Tests](https://github.com/cd34/birdcage-ruby/actions/workflows/test.yml/badge.svg)](https://github.com/cd34/birdcage-ruby/actions/workflows/test.yml)
+
 Birdcage takes a number of Text objects and tries to construct the maximal length Phrase from the Text objects. Useful when trying to restrain tweet length. (Ruby Gem)
 
 Need Python? https://github.com/cd34/birdcage
