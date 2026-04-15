@@ -1,4 +1,5 @@
-source "http://rubygems.org"
+# frozen_string_literal: true
 
-# Specify your gem's dependencies in lossyfer.gemspec
+source "https://rubygems.org"
+
 gemspec

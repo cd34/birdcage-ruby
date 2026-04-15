@@ -1,45 +1,37 @@
+# frozen_string_literal: true
+
 class Text
   attr_accessor :trim, :selected, :maxlen, :min_length
 
-  def initialize args, options = {}
+  def initialize(args, trim: false, trim_delim: "...", min_length: 10)
     @args = args.map(&:to_s).sort_by(&:length)
-    @trim = options['trim'] || false
-    @trim_delim = options['trim_delim'] || '...'
-    @min_length = options['min_length'] || 10
-    if @trim
-      @min_length += @trim_delim.length
-    end
-    @maxlen = @args.max{ |x, y| x.length <=> y.length}
+    @trim = trim
+    @trim_delim = trim_delim
+    @min_length = min_length
+    @min_length += @trim_delim.length if @trim
+    @maxlen = @args.max_by(&:length)
     @selected = 0
   end
 
-  #def items
-  #  return @args
-  #end
-
   def lens
-    @args.map { |x| x.length }
+    @args.map(&:length)
   end
 
-  def select selected
-    if selected < @args.length and selected >= 0
+  def select(selected)
+    if selected < @args.length && selected >= 0
       @selected = selected
     else
-      raise IndexError.new('Index out of range')
+      raise IndexError, "Index out of range"
     end
   end
 
-  def cur_text options = {}
-    trim_length = options['trim_length'] || nil
-    if trim_length and @trim
-      append_elipses = ''
-      if trim_length < @args[@selected].length
-        trim_length -= 3
-        append_elipses = '...'
-        return @args[selected][0...trim_length] + append_elipses
-      end
+  def cur_text(trim_length: nil)
+    if trim_length && @trim && trim_length < @args[@selected].length
+      trimmed_length = trim_length - 3
+      "#{@args[@selected][0...trimmed_length]}..."
+    else
+      @args[@selected]
     end
-    return @args[@selected]
   end
 
   def cur_len
@@ -48,9 +40,7 @@ class Text
 
   def next_len
     if @selected < @args.length - 1
-       return @args[@selected+1].length
-    else
-       return nil
+      @args[@selected + 1].length
     end
   end
 
@@ -58,66 +48,56 @@ class Text
     if @selected < @args.length - 1
       @selected += 1
     else
-      raise IndexError.new('Index out of range')
+      raise IndexError, "Index out of range"
     end
   end
 end
 
 class Phrase
-  def initialize args
+  def initialize(args)
     @args = args
   end
 
-  def generate options = {}
-    delim = options['delimiter'] || ' '
-    phrase_length = options['length'] || nil
-        
-    max_message = @args.map {|x| x.maxlen}.join(delim)
-    if not phrase_length or max_message.length <= phrase_length
-      return max_message
-    end
+  def generate(delimiter: " ", length: nil)
+    max_message = @args.map(&:maxlen).join(delimiter)
+    return max_message if !length || max_message.length <= length
 
-    lens = @args.map {|x| x.lens if not x.trim}.compact
-    len_trims = @args.map {|x| x.min_length if x.trim}.compact
+    lens = @args.filter_map { |x| x.lens unless x.trim }
+    len_trims = @args.filter_map { |x| x.min_length if x.trim }
 
-    max_length = phrase_length - delim.length * @args.length -
-      len_trims.inject(0, :+)
+    max_length = length - delimiter.length * @args.length -
+      len_trims.sum
 
-    if max_length < 0
-      raise ArgumentError.new('resulting phrase too short')
-    end
+    raise ArgumentError, "resulting phrase too short" if max_length < 0
 
-    current_len = non_trim_length()
+    current_len = non_trim_length
     num_lens = lens.length
     len_count = 0
 
-    while current_len < max_length and len_count < num_lens
-       @args.each do |x|
-        begin
-          if x.next_len - x.cur_len + current_len < max_length
-            x.select_next
-            current_len = non_trim_length(args)
-            len_count = 0
-          end
-        rescue
-            len_count += 1
+    while current_len < max_length && len_count < num_lens
+      @args.each do |x|
+        next_l = x.next_len
+        if next_l && next_l - x.cur_len + current_len < max_length
+          x.select_next
+          current_len = non_trim_length
+          len_count = 0
+        else
+          len_count += 1
         end
       end
     end
- 
-    final_lens = @args.map {|x| x.cur_len if not x.trim}.compact.inject(0, :+)
-    trim_length = (phrase_length - delim.length * @args.length -
+
+    final_lens = @args.filter_map { |x| x.cur_len unless x.trim }.sum
+    trim_length = (length - delimiter.length * @args.length -
       final_lens + 1) / len_trims.length
-    return @args.map {|x| x.cur_text({'trim_length'=>trim_length})}.join(delim)
+    @args.map { |x| x.cur_text(trim_length: trim_length) }.join(delimiter)
   end
 
   def non_trim_length
     length = 0
     @args.each do |x|
-      if not x.trim
-        length += x.cur_text.length
-      end
+      length += x.cur_text.length unless x.trim
     end
-    return length
+    length
   end
 end
